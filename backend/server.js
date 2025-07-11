@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
-app.use(express.json()); 
+app.use(express.json());  // middleware that runs between req and res. or to parse req.body
 
 app.get("/", (req, res) => {
     res.send("🚀 Server is working!");
