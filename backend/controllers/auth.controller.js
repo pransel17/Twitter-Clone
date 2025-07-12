@@ -5,7 +5,7 @@ import generateTokenAndSetCookie from "../lib/utils/generateToken.js"
 
 
 
-// SIGN UP  
+// SIGN UP FUNCTIONALITY 
 export const signup = async (req, res) =>{
     try{
         const {FullName, Username, Email, Password} = req.body; 
@@ -25,7 +25,13 @@ export const signup = async (req, res) =>{
             return res.status(400).json({ error: "Email is already taken "});
         }
 
+
+        if(Password.length < 6){
+            return res.status(400).json({ error: "Password must be at least 6 characters"});
+        }
+
         // hash passsword
+
 
         const salt = await bcrypt.genSalt(10); // bcrypt helps encrypt passwords before storing them in a database, security purpp
         const hashedPassword = await bcrypt.hash(Password,salt);
@@ -66,10 +72,12 @@ export const signup = async (req, res) =>{
 }
 
 
+
+
+// LOGIN FUNCTIONALITY 
 export const login = async (req, res) =>{
-    res.json({
-        data: "You hit the login endpoint",
-    });
+
+    
 }
 
 export const logout = async (req, res) =>{
