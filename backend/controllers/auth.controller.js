@@ -114,7 +114,24 @@ export const login = async (req, res) =>{
 
 // LOGOUT FUNCTIONALITY 
 export const logout = async (req, res) =>{
-    res.json({
-        data: "You hit the logout endpoint",
-    });
+    try{
+        res.cookie("jwt", "", {maxAge:0}) // 0 ms para cookie killed agad, check in generateToken.js 
+        res.status(200).json({message: "Logged out successfully"})
+    }
+    catch (error){
+        console.log("Error in logout controller", error.message)
+        res.status(500).json({error: "Invalid user data"})
+    }
+}
+
+// AUTHETICATION FUNCTIONALITY 
+export const getMe = async (req,res) =>{
+    try{
+        const user = await User.findById(req.user._id)
+
+    }
+    catch (error){
+
+    }
+
 }
