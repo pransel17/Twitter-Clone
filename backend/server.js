@@ -1,8 +1,9 @@
 import express from "express";
 import dotenv from "dotenv"; // loads env file 
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/auth.routes.js";
 import connectMongoDB from "./db/connectMongoDB.js";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/user.routes.js";
 
 
 dotenv.config();
@@ -17,7 +18,9 @@ app.get("/", (req, res) => {
     res.send("🚀 Server is working!");
 });
   
-app.use("/api/auth", authRoutes); // connecting routes for aauthetntication
+app.use("/api/auth", authRoutes); // connecting routes for authentication
+app.use("/api/user", userRoutes);
+
 
 app.listen(PORT, () => { // this starts server @ prort 2000
     console.log(`port is running at ${PORT}`);

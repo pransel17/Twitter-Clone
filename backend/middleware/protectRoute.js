@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
+// purpose: protect private routes meaning only authenticated users can pass tto this
+
 export const protectRoute = async (req,res,next) =>{
     try{
         const token = req.cookies.jwt;
