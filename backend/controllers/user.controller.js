@@ -69,18 +69,48 @@ export const followUnfollowUser = async (req,res) => {
 export const getSuggestedProfile = async(req,res) =>{
     try{ 
         // exclude current user
-        const userId = req.user._id;
+        const userId = req.user._id; // from JWT token authentication middleware.
 
-        const usersFollowedByMe = await User.findById(userId).select("following");
+        const usersFollowedByMe = await User.findById(userId).select("Following"); // find users alrready followed by ,e
 
+        const users = await User.aggregate([ // get 10 random users 
+            {
+                $match:{
+                    _id: {$ne: userId} // excluding me
+                }
+            },
+            {$sample:{size:10}}
+        ])
+
+        const filteredUsers = users.filter(user=>!usersFollowedByMe.Following.includes(user._id)) // Remove people I already follow from the random 10 (users array) 
+        const suggestedUsers = filteredUsers.slice(0,4) // get 4 people from users array, that is remaining w/o people i followed
+        suggestedUsers.forEach(user=>user.Password=null) // trying to hide passwords before sending data to the frontend
+
+        res.status(200).json(suggestedUsers)
 
     } catch (error){
-
+        res.status(500).json({error:error.message})
+        console.log("Error in getSuggestedProfile: ", error.message) 
     }
-
 }
 
 
-export const updateUserProfile = async (req,res) => {
+// this is long since user will modify their profile, meaning their own database will be modified here :(
+export const updateUser = async (req,res) => {
+        const {fullname, email, username, currentPassword, newPassword, bio, link} = req.body
+        let {profileIMG, coverImg} = req.body;
+
+        const userID = req.user._id; // id of ccurennt user
+
+        try{
+            const user = await User.findById(userID);
+            if(!user) return res.status(404).jsom({messae: "User not found"});
+
+
+
+        } catch (error) {
+    
+        }
+
 
 }
