@@ -100,13 +100,13 @@ export const getSuggestedProfile = async(req,res) =>{
 
 // this is long since user will modify their profile, meaning their own database will be modified here :(
 export const updateUser = async (req,res) => {
-        const {fullname, email, username, currentPassword, newPassword, bio, link} = req.body
+        const {FullName, Email, Username, currentPassword, newPassword, bio, link} = req.body
         let {profileIMG, coverImg} = req.body;
 
         const userID = req.user._id; // id of ccurennt user
 
         try{
-            const user = await User.findById(userID);
+            let user = await User.findById(userID);
             if(!user) return res.status(404).json({message: "User not found"});
 
             if((!newPassword && currentPassword) || (!currentPassword && newPassword)) {
@@ -119,11 +119,12 @@ export const updateUser = async (req,res) => {
                 if(newPassword.length < 6){
                     return res.status(400).json({error: "Password must be at least 6 characters long"})
                 }
+            
 
                 // the usual password security gorlie
                 const salt = await bcrypt.genSalt(10);
                 user.Password = await bcrypt.hash(newPassword, salt)
-
+            }
                 // WILL BE USING CLOUDINARY HEREE
                 // Cloudinary is a cloud-based media management 
                 // Stores images and videos
@@ -131,39 +132,49 @@ export const updateUser = async (req,res) => {
                 // Great for handling user profile pictures, uploads, etc
 
 
-                if(profileIMG){
-                    const uploadedResponse = await cloudinary.uploader.upload(profileIMG); // uploads the profileIMG to Cloudinary
-                    profileIMG = uploadedResponse.secure_url; // overwrites the original profileIMG variabl
+            if(profileIMG){
+
+                //  delete the user's current profile image from Cloudinary before uploading a new one
+                // para di maconsume space
+
+                if (user.ProfileImage){
+                    // gets the last part of url of pic in clodinary and remove the extension to destroy.
+                    await cloudinary.uploader.destroy(user.ProfileImage.split("/").pop().split(".")[0])
                 }
 
-                if(coverImg){
-                    const uploadedResponse = await cloudinary.uploader.upload(coverImg);
-                    coverImg = uploadedResponse.secure_url;
-                }
-
-                // either keep the input or the existing value in db 
-
-                user.FullName = fullname || user.FullName
-                user.Email = email || user.Email
-                user.Username = username || user.Username
-                user.bio = bio || user.bio
-                user.link = link || user.link
-                user.ProfileImage = profileIMG || user.ProfileImage
-                user.CoverImage = coverImg || user.CoverImage
-
-                user = await user.save(); // u know mgdb saverr
-                user.Password = null
-
-                return res.status(200).json(user);
-
-
+                const uploadedResponse = await cloudinary.uploader.upload(profileIMG); // uploads the profileIMG to Cloudinary
+                profileIMG = uploadedResponse.secure_url; // overwrites the original profileIMG variabl
             }
 
 
+            if(coverImg){
+
+                if (user.CoverImage){
+                    await cloudinary.uploader.destroy(user.CoverImage.split("/").pop().split(".")[0])
+                }
+
+                const uploadedResponse = await cloudinary.uploader.upload(coverImg);
+                coverImg = uploadedResponse.secure_url;
+            }
+
+            // either keep the input or the existing value in db 
+
+            user.FullName = FullName || user.FullName
+            user.Email = Email || user.Email
+            user.Username = Username || user.Username
+            user.bio = bio || user.bio
+            user.link = link || user.link
+            user.ProfileImage = profileIMG || user.ProfileImage
+            user.CoverImage = coverImg || user.CoverImage
+
+            user = await user.save(); // u know mgdb saverr
+            user.Password = null 
+
+            return res.status(200).json(user);
+            
 
         } catch (error) {
-    
+            console.error("Update failed:", error);
+            res.status(500).json({ error: "Something went wrong" });
         }
-
-
 }
