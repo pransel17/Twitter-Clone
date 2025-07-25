@@ -1,6 +1,9 @@
 import User from "../models/user.model.js"
 import  Notification  from "../models/notification.model.js"
 
+import bcrypt from "bcryptjs"
+import { v2 as cloudinary } from 'cloudinary';
+
 
 export const getUserProfile = async (req,res) => {
     const {Username} = req.params
@@ -104,7 +107,57 @@ export const updateUser = async (req,res) => {
 
         try{
             const user = await User.findById(userID);
-            if(!user) return res.status(404).jsom({messae: "User not found"});
+            if(!user) return res.status(404).json({message: "User not found"});
+
+            if((!newPassword && currentPassword) || (!currentPassword && newPassword)) {
+                return res.status(400).json({error: "Please provide both current password and new password"})
+            }
+
+            if(currentPassword && newPassword){
+                const isMatch = await bcrypt.compare(currentPassword, user.Password) // comparing the pass from db
+                if(!isMatch) return res.status(400).json({ error: "Current password is incorrect"})
+                if(newPassword.length < 6){
+                    return res.status(400).json({error: "Password must be at least 6 characters long"})
+                }
+
+                // the usual password security gorlie
+                const salt = await bcrypt.genSalt(10);
+                user.Password = await bcrypt.hash(newPassword, salt)
+
+                // WILL BE USING CLOUDINARY HEREE
+                // Cloudinary is a cloud-based media management 
+                // Stores images and videos
+                // Gives you a URL back so you can load it in your frontend
+                // Great for handling user profile pictures, uploads, etc
+
+
+                if(profileIMG){
+                    const uploadedResponse = await cloudinary.uploader.upload(profileIMG); // uploads the profileIMG to Cloudinary
+                    profileIMG = uploadedResponse.secure_url; // overwrites the original profileIMG variabl
+                }
+
+                if(coverImg){
+                    const uploadedResponse = await cloudinary.uploader.upload(coverImg);
+                    coverImg = uploadedResponse.secure_url;
+                }
+
+                // either keep the input or the existing value in db 
+
+                user.FullName = fullname || user.FullName
+                user.Email = email || user.Email
+                user.Username = username || user.Username
+                user.bio = bio || user.bio
+                user.link = link || user.link
+                user.ProfileImage = profileIMG || user.ProfileImage
+                user.CoverImage = coverImg || user.CoverImage
+
+                user = await user.save(); // u know mgdb saverr
+                user.Password = null
+
+                return res.status(200).json(user);
+
+
+            }
 
 
 
