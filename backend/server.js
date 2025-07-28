@@ -3,6 +3,8 @@ import dotenv from "dotenv"; // loads env file
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.routes.js";
 import { v2 as cloudinary } from 'cloudinary'; // import for cloudinary
+import postRoutes from "./routes/post.routes.js";
+
 
 import authRoutes from "./routes/auth.routes.js";
 import connectMongoDB from "./db/connectMongoDB.js";
@@ -29,6 +31,8 @@ app.get("/", (req, res) => {
   
 app.use("/api/auth", authRoutes); // connecting routes for authentication
 app.use("/api/user", userRoutes);
+app.use("/api/posts", postRoutes);
+
 
 
 app.listen(PORT, () => { // this starts server @ prort 2000
