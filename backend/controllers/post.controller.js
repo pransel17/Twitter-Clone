@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import Post from "../models/post.models.js" 
 import { v2 as cloudinary } from 'cloudinary';
+import Notification from "../models/notification.model.js"
 
 console.log("Post controller is working")
 
@@ -87,16 +88,71 @@ export const commentPost = async (req,res) => {
     } catch(error) {
         res.status(500).json({error: "Internal server error "});
     }
-
+ 
 }
 
 
 // yo bro gonna take undeserve rest
 export const likeUnlikePost = async (req,res) => {
     try{
+        const userId = req.user._id 
+        const {id:postId} = req.params
 
+        const post = await Post.findById(postId)
+        
+
+        if(!post){
+            return res.status(400).json({error: "Post not found"});
+        }
+
+        const userLikedPost = post.likes.includes(userId)
+
+        if(userLikedPost){
+            // unlike post: userId already exist in the post array
+            await Post.updateOne({_id:postId}, {$pull: {likes: userId}})
+            res.status(200).json({message: "Post unliked"});
+        }
+        else{
+            // Like post
+            post.likes.push(userId)
+            await post.save()
+
+            // send notif
+            const notification = new Notification({
+                from: userId,
+                to: post.user,
+                type: "like"
+            })
+
+            await notification.save()
+            res.status(200).json({message: "Post liked successfully"})
+        }
 
     } catch (error) {
+        res.status(500).json({error: "Internal server error "});
+    }
+}
 
+export const getAllPosts = async (req,res) => {
+    try{
+
+        const posts = await Post.find().sort({ createdAt: -1 }).populate({ // that -1 will put new post at front
+
+            path: "user",
+            select: "-Password",
+        }).populate({ // FETCHES THE ENTIRE DOCUMENT 
+            path: "comments.user",
+            select: "-Password"
+        })
+
+
+        if(posts.length === 0 ) {
+            return res.status(200).json([])
+        }
+
+        res.status(200).json(posts)
+
+    } catch (error){
+        res.status(500).json({error: "Internal server error "});
     }
 }
