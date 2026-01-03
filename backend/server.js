@@ -35,9 +35,8 @@ app.use("/api/posts", postRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 
-
-
 app.listen(PORT, () => { // this starts server @ prort 2000
     console.log(`port is running at ${PORT}`);
     connectMongoDB();
 })
+

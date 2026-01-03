@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center gap-6 p-4">
+
+      {/* Tailwind Test */}
+      <h1 className="text-4xl font-bold text-blue-500">
+        Tailwind CSS is working!
+      </h1>
+
+      {/* DaisyUI Button Test */}
+      <button className="btn btn-primary">
+        DaisyUI Button
+      </button>
+
+      {/* DaisyUI Card Test */}
+      <div className="card w-80 bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">DaisyUI Card</h2>
+          <p>This card proves DaisyUI + Tailwind are working together.</p>
+          <div className="card-actions justify-end">
+            <button className="btn btn-accent">Click Me</button>
+          </div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      {/* Tailwind + DaisyUI Theme Test */}
+      <div data-theme="dark" className="p-4 rounded-lg">
+        <button className="btn btn-secondary">Dark Theme Button</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      
+
+    </div>
+  );
 }
 
-export default App
+export default App;
