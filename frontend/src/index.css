@@ -1,2 +1,20 @@
 @import "tailwindcss";
-@plugin "daisyui";
+
+@plugin "daisyui" {
+  themes: light --default, black; 
+}
+
+@plugin "daisyui/theme" {
+  name: "black";
+  
+  /* ADD THIS LINE - This is the "bridge" to your index.html */
+  /*selector: "[data-theme='black']"; */
+
+  --color-primary: rgb(29, 155, 240);
+  --color-secondary: rgb(24, 24, 24);
+  
+  --color-base-100: #000000;
+  --color-base-content: #ffffff;
+  
+  --radius-box: 1rem;
+}
