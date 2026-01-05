@@ -4,6 +4,7 @@ import SignUpPage from './pages/auth/signup/SignUpPage';
 import LoginPage from './pages/auth/login/LoginPage';
 
 // app.jsx is the furniture, nandito yung mga routes for each pages ng app/web 
+// same routing like sa backend 
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path='/' element={<HomePage/>} />
         <Route path='/signup' element={<SignUpPage />} />
 				<Route path='/login' element={<LoginPage />} /> 
+
       </Routes>
     </div> 
   );
