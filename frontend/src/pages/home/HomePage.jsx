@@ -3,8 +3,9 @@ import { useState } from "react";
 import Posts from "../../components/common/Posts";
 import CreatePost from "./CreatePost";
 
+// since static ito, ito ung main div then inject inject na lang ng content
 const HomePage = () => {
-	const [feedType, setFeedType] = useState("forYou");
+	const [feedType, setFeedType] = useState("forYou"); // usestate to trigger React to repaint the screen, para di static yung part ng buttons 
 
 	return (
 		<>
@@ -33,10 +34,8 @@ const HomePage = () => {
 					</div>
 				</div>
 
-				{/*  CREATE POST INPUT */}
+				{/* injecting ung jsx file, hiwalay para efficient */}
 				<CreatePost />
-
-				{/* POSTS */}
 				<Posts />
 			</div>
 		</>
